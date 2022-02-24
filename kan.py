@@ -1,8 +1,9 @@
-possible = {role: [] for role in project.keys()}
+def odstran(possible, name, skill):
+    del possible[skill]
+    for elem in possible:
+        if name in possible[elem]:
+            possible[elem].remove(name)
 
-
-def odstran(possible, name):
-    pass
 
 def utried(possible):
     lens = {k: len(v) for k, v in possible.items()}
@@ -18,4 +19,3 @@ kontroluj(a) # flase
 del a['w']
 kontroluj(a) # true
 kontroluj({}) # flase
-
