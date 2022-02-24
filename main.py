@@ -1,8 +1,6 @@
 from collections import defaultdict
-import input
 
-#contribs, projects = {"Anna": {"C++": 2}}, {"WebServer": {"DAY": 7, "SCR": 10, "BBF":7, "ROLE": {"HTML": 3, "C++": 2}}}
-contribs, projects = input.load(), {}
+contribs, projects = {"Anna": {"C++": 2}}, {"WebServer": {"DAY": 7, "SCR": 10, "BBF":7, "ROLE": {"HTML": 3, "C++": 2}}}
 output = []
 
 # reverse the dictionary
@@ -14,6 +12,7 @@ for key, value in contribs.items():
         else:
             linkedin[key2][key] = value2
 
+
 for project in projects:
     possible = defaultdict(lambda: [])
     is_possible = True
@@ -21,7 +20,6 @@ for project in projects:
         if role in linkedin:
             for name, level in linkedin[role].items():
                 if level >= role_level:
-                    # {"C++": ["meno1", ...]}
                     possible[role].append(name)
         if len(possible[role]) == 0:
             is_possible = False
