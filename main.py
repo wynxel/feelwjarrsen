@@ -1,5 +1,6 @@
 from collections import defaultdict
 from kan import utried, kontroluj, odstran
+from input import sort_projects
 
 contribs, projects = {"Anna": {"C++": 2}}, {"WebServer": {"DAY": 7, "SCR": 10, "BBF":7, "ROLE": {"HTML": 3, "C++": 2}}}
 output = []
@@ -15,7 +16,7 @@ for key, value in contribs.items():
 
 
 def get_one_full_project():
-    for project in projects:
+    for project in sort_projects(projects):
         possible = {role: [] for role in project.keys()}
         is_possible = True
         for role, role_level in project["ROLE"].items():
