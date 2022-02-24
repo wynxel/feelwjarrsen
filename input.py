@@ -21,3 +21,11 @@ print(zebydobrebolo[skills:])
 {"WebServer": {"DAY": 7, "SCR": 10, "BBF": 7, "ROLE": {"HTML": 3, "C++": 2}}}
 print(x)
 
+def sort_projects(projects):
+
+    project_score = {proj: 0 for proj in projects.keys()}
+
+    for project in projects.keys():
+        project_score[project] = (projects["SCR"] + projects["BBF"]) / (projects["DAY"] * (sum(projects["ROLE"][skill] for skill in projects["ROLE"])))
+
+    return sorted(project_score.items(), key=lambda x: x[1], reverse=True)

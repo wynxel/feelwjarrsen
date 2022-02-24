@@ -1,135 +1,101 @@
-import random
 
-from abc import ABC, abstractmethod
+class MapCSP():
+    def __init__(self, projects, neighbours):
+        # List of available contributorself.contributor
+        self.contributor_options = ['red', 'green', 'blue', 'yellow']
+        self.projects = projects
+        self.neighbours = neighbours  # CODE HERE
+        self.contributor = {s: None for s in self.projects}
+
+    def print_(self):
+        # Prints all projects and their contributorself.contributor
+        for s in sorted(self.projects):
+            print('{} has contributor: {}'.format(s, self.get_contributor(s)))
+        print()
 
 
-class GeneticAlg(ABC):
-    """ Abstract genetic algorithm framwork """
+    def set_contributor(self, project, contributor):
+        # Assign contributor to a project
+        self.contributor[project] = contributor
 
-    @abstractmethod
-    def generate_individual(self):
-        """ Generate random individual.
-        To be implemented in subclasses
-        """
-        pass
+    def del_contributor(self, project):
+        # Remove contributor from project - reset to None
+        self.contributor[project] = None
 
-    def show_individual(self, x):
-        """ Show the given individual x, either to console or graphically."""
-        print(x)
+    def get_contributor(self, project):
+        # Get contributor assigned to a project
+        return self.contributor[project]
 
-    @abstractmethod
-    def fitness(self, x):
-        """Returns fitness of a given individual.
-        To be implemented in subclasses"""
-        pass
+    def has_contributor(self, project):
+        # Returns True if project has already a contributor
+        return self.contributor[project] != None
 
-    def crossover(self, x, y, k):
-        """ Take two parents (x and y) and make two children by applying k-point
-        crossover. Positions for crossover are chosen randomly."""
-        oddelovace = [0, len(x)]
+    def same_contributors(self, project1, project2):
+        # Returns True if project1 and project2 are contributored with the same contributor.
+        return self.has_contributor(project1)  and  self.get_contributor(project1) == self.get_contributor(project2)
 
-        for i in range(k):
-            oddelovace.append(random.choice(range(len(x))))
+    def all_contributored(self):
+        # Returns True if all projects of the map are already contributored.
+        return all([self.has_contributor(s) for s in self.projects])
 
-        oddelovace = sorted(oddelovace)
+    def is_correct_contributoring(self):
+        # Returns True if contributoring is all correct, False if not. Prints the result with found error (if any).
+        print('contributoring is ', end='')
+        for s1 in self.projects:
+            if self.get_contributor(s1) not in self.contributor_options:
+                print('INCORRECT - {} has invalid contributor: {}\n'.format(s1, self.get_contributor(s1)))
+                return False
+            for s2 in self.neighbours[s1]:
+                if self.same_contributors(s1,s2):
+                    print('INCORRECT - {} and {} have conflicting contributor {}\n'.format(s1, s2, mapa.get_contributor(s1)))
+                    return False
+        print('OK\n')
+        return True
 
-        x_new, y_new = x[:], y[:]
 
-        for i in range(1, len(oddelovace), 2):
-            terajsi = oddelovace[i]
-            predosly = oddelovace[i - 1]
+    def can_set_contributor(self, project, contributor):
+        # Returns True if we can set contributor to a project without violating constrains - all neighbouring
+        # projects must have None or different contributor.
+        for i in self.neighbours[project]:
+             if contributor == self.get_contributor(i):
+                return False
+        return True
 
-            if predosly != terajsi:
-                x_new[predosly:terajsi], y_new[predosly:terajsi] = y[predosly:terajsi], x[predosly:terajsi]  # krizenie
+    def select_next_state(self):
+        # Selects next project that will be contributored, or returns False if no such exists (all stated are
+        # contributored). You can use heuristics or simply choose a project without contributor for start.
+        def project_contrib(susedia):
+            return set(self.get_contributor(project) for project in susedia if self.has_contributor(project))
+        # zisti mi od susedov ake maju farby,
+        # aby som ich potom mohol odcitat od vsetkych farieb a vybrat taky stat, ktory bude mat co najmenej moznosti, cize ma okolo seba zafarbene vela
+        
+        unsigned_contributors = []                  # klasicka heuristika MRV, opisana je vyssie
+        for project in self.projects:
+            if not self.has_contributor(project):   
+                unsigned_contributors.append(project)
 
-        return (x_new, y_new)
+        # odcitam dlzku jednotlivych susedov od dlzky vsetkych, aby som dostal na prve miesto ten stat, ktory ma co najmenej moznosti
+        all_contributors = set(self.contributor_options)
+        unsigned_contributors.sort(key=lambda x: len(all_contributors - set(project_contrib(self.neighbours[x]))), reverse = True)
 
-    def boolean_mutation(self, x, prob):
-        """ Elements of x are 0 or 1. Mutate (i.e. change) each element of x with given probability."""
-        potomok = x
-        for poc in range(len(potomok)):
-            if random.random() <= prob:
-                if potomok[poc] == 1:
-                    potomok[poc] = 0
-                else:
-                    potomok[poc] = 1
-        return potomok
+        if len(unsigned_contributors) > 0:
+            return unsigned_contributors.pop()
+        return False
 
-    @abstractmethod
-    def number_mutation(self, x, prob):
-        """ Elements of x are real numbers [0.0 .. 1.0]. Mutate (i.e. add/substract random number)
-        each number in x with given probabipity."""
-        pass
 
-    @abstractmethod
-    def mutation(self, x, prob):
-        """ Decides which mutation will occur. """
-        pass
+    def contributor_map(self):
+        # Assign contributorself.contributor to all projects on the map. (! Beware: 'map' is python`s reserved word - function)
+        if self.all_contributored():
+            return True
+        x = self.select_next_state()
+        for contributor in self.contributor_options:
+            if self.can_set_contributor(x, contributor):
 
-    @abstractmethod
-    def solve(self, max_generations, goal_fitness=1):
-        """ Implementation of genetic algorithm. Produce generations until some
-         individual`s fitness reaches goal_fitness, or you exceed total number
-         of max_generations generations. Return best found individual."""
-        while max_generations != 0:
-            # print(max_generations)
-            max_generations -= 1
+                self.set_contributor(x, contributor)
 
-            # najdem najlepsieho, ci uz nieje v cieli, a zaroven vysortujem populaciu na polku
-            # print(self.population)
-            try: sort_population = sorted(self.population, key=lambda x: self.fitness(x), reverse=self.best_or_worst == "best")
-            except: sort_population = sorted(self.population, key=lambda x: self.fitness(x), reverse=True)
+                if self.contributor_map():
+                    return True
 
-            najlepsi_zatial = self.fitness(sort_population[0])
-            self.for_plot.append(najlepsi_zatial)
-
-            # for i in sort_population:
-            #     print(self.fitness(i))
-
-            if najlepsi_zatial == goal_fitness:
-                return sort_population[0]
-
-            polka = len(sort_population) // 2
-            self.population = sort_population[:polka]  # treba zakomentovat ak ideme pouzit tournament selection
-
-            # tournament selection   - comment the row above and uncomment rows below
-
-            ##            novy = []
-            ##            for x in range(polka):
-            ##                best = None
-            ##                for i in range(2): # dvaja budu stale sutazit
-            ##                    ind = self.population[random.randrange(0, len(self.population))]
-            ##                    if (best == None) or self.fitness(ind) > self.fitness(best):
-            ##                        best = ind
-            ##                novy.append(best)
-            ##
-            ##            self.population = novy[:]
-
-            # mutacie a skrizenie
-            deti = []
-            for i in range(len(self.population)):
-                x = random.choice(self.population)  # rodicia
-                y = random.choice(self.population)
-
-                dvaja_potomci = self.crossover(x, y, self.n_crossover)  # skrizenie
-
-                for ptmk in dvaja_potomci:
-                    potomok = self.mutation(ptmk, self.mutation_prob)  # mutacie
-                    deti.append(potomok)
-
-            # necham len tu najlepsiu polovicu deti
-            try: sort_deti = sorted(deti, key=lambda x: self.fitness(x), reverse=self.best_or_worst == "best")
-            except: sort_deti = sorted(deti, key=lambda x: self.fitness(x), reverse=True)
-
-            # tu uz dotvaram novu generaciu teda polka rodicov a polka deti
-            polka = len(sort_deti) // 2
-            deti = sort_deti[:polka]
-            for i in deti:
-                self.population.append(i)  # tu uz dotvaram celkovu novu generaciu
-
-        try: sort_population = sorted(self.population, key=lambda x: self.fitness(x), reverse=self.best_or_worst == "best")
-        except:  sort_population = sorted(self.population, key=lambda x: self.fitness(x), reverse=True)
-
-        najlepsi = sort_population[0]
-        self.for_plot.append(self.fitness(najlepsi))
-        return najlepsi
+                self.del_contributor(x)
+ 
+        return False
