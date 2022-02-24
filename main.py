@@ -1,6 +1,8 @@
 from collections import defaultdict
+import input
 
-contribs, projects = {"Anna": {"C++": 2}}, {"WebServer": {"DAY": 7, "SCR": 10, "BBF":7, "ROLE": {"HTML": 3, "C++": 2}}}
+#contribs, projects = {"Anna": {"C++": 2}}, {"WebServer": {"DAY": 7, "SCR": 10, "BBF":7, "ROLE": {"HTML": 3, "C++": 2}}}
+contribs, projects = input.load(), {}
 output = []
 
 # reverse the dictionary
@@ -18,5 +20,12 @@ for project in projects:
         if role in linkedin:
             for name, level in linkedin[role].items():
                 if level >= role_level:
+                    # {"C++": ["meno1", ...]}
                     possible[role].append(name)
+    # ma possible vsetky role vyplnene?
+    # ci nie je jeden na dve role ktore nevie nik iny?
+    # ak je vsetko ok, pridaj do vysledku
+
+    # pridat do output
+
 
