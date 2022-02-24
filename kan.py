@@ -19,3 +19,10 @@ kontroluj(a) # flase
 del a['w']
 kontroluj(a) # true
 kontroluj({}) # flase
+
+
+def print_result(project, contribs: set):
+    print(project)
+    print(" ".join(contribs))
+
+print_result("meno projektu", set(["Anna", "Joe"]))
