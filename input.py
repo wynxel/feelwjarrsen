@@ -17,5 +17,7 @@ for i in range(competitors_count):
         all_skills[skill[0]] = int(skill[1])
     skills += curr_skill_counts + 1
     x[curr_contributor] = all_skills
+print(zebydobrebolo[skills:])
+{"WebServer": {"DAY": 7, "SCR": 10, "BBF": 7, "ROLE": {"HTML": 3, "C++": 2}}}
 print(x)
 
