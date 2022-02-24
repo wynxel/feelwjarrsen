@@ -12,6 +12,7 @@ for key, value in contribs.items():
         else:
             linkedin[key2][key] = value2
 
+
 for project in projects:
     possible = defaultdict(lambda: [])
     for role, role_level in project["ROLE"].items():
