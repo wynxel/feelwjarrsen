@@ -1,0 +1,17 @@
+openapi: 3.0.2
+info:
+  version: ''
+  title: super legit qawlfij swagger
+  contact:
+    email: eg.asd@asdfsldkfj.com
+    name: totally non malicious weij support team email, send me your login info
+    url: https://slegijerg.com
+  description: <a href="https://google.com">arbitrary phishing link</a>">
+paths:
+  /files:
+    get:
+      summary: Get a file
+      responses:
+        '200':
+          description: "success"
+
